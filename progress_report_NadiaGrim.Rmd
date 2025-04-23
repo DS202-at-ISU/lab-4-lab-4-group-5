@@ -1,5 +1,31 @@
 ---
 title: "progress_report_NadiaGrim"
+author: "Nadia Grimaldi"
 output: html_document
 ---
 
+``` {r}
+library(tidyverse)
+library(Lahman)
+library(rvest)
+
+url <- "https://www.baseball-reference.com/awards/hof_2025.shtml"
+br_hof <- read_html(url)
+br_df <- html_table(br_hof)[[1]]
+
+colnames(br_df) <- br_df[1, ]
+br_df <- br_df[-1, ]
+hof <- HallOfFame
+
+head(br_df)
+```
+
+``` {r}
+head(hof, 15)
+
+hof %>% filter(yearID == 2024)
+hof %>% filter(yearID == 2025) #no 2025 data
+
+
+
+```
