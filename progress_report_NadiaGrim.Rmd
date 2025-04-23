@@ -26,6 +26,19 @@ head(hof, 15)
 hof %>% filter(yearID == 2024)
 hof %>% filter(yearID == 2025) #no 2025 data
 
+yes_no = factor("Y", "N")
+yes_no
+unique(hof$votedBy)
 
+br_df %>% mutate(inducted = case_when(Votes > 296 ~ TRUE, TRUE ~ FALSE))
 
+mutate(br_df, ballots = Votes + 10)
+unique(colnames(br_df))
+colnames(br_df)
+
+clean <- br_df %>% mutate(yearID = 2025, ballots = 394, votes = Votes,
+                          needed = 296, ==inducted = case_when(
+                            Votes >= 296 ~ "Y", TRUE ~ "N"))
+head(clean)
+head(br_df)
 ```
