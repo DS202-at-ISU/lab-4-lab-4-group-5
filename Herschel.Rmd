@@ -19,6 +19,10 @@ All submissions to the github repo will be automatically uploaded for grading on
 
 # Lab 4: Scraping (into) the Hall of Fame
 
+```{r, include=FALSE}
+library(tidyverse)
+library(Lahman)
+```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 hof <- Lahman::HallOfFame
@@ -31,3 +35,50 @@ hof %>%
   xlim(c(2000, 2022)) +
   ylab("Percent of votes")
 ```
+
+Step 1: Scrape data off the web
+
+```{r}
+
+
+
+```
+
+
+https://www.baseball-reference.com/awards/hof_2025.shtml
+
+Step 2a: Clean the Data, removing NAs
+
+```{r}
+
+
+
+```
+
+
+Step 2b: Clean the Data, removing Duplicates
+
+```{r}
+
+
+
+```
+
+
+Step 2c: Clean the Data, shifting data into numberical labels
+
+```{r}
+
+
+
+```
+
+
+Step 3: Merge the two data frame structures
+
+```{r}
+
+
+
+```
+
