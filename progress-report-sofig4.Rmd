@@ -1,0 +1,62 @@
+---
+title: "Lab 4"
+author: "Sofi Gutierrez"
+date: "2025-04-24"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(Lahman)
+library(rvest)
+library(readr)
+```
+
+```{r}
+url <- "https://www.baseball-reference.com/awards/hof_2025.shtml"
+br_hof <- read_html(url)
+br_df <- html_table(br_hof)[[1]]
+
+# Clean column names if they are stored in the first row
+colnames(br_df) <- br_df[1, ]
+br_df <- br_df[-1, ]
+```
+
+```{r}
+cleaned_data <- br_df %>%
+  mutate(
+    playerID = Name,          # Map 'Name' to 'playerID'
+    yearID = 2025,            # Add the year
+    votedBy = "Baseball Reference", # Source of voting data
+    ballots = 394,            # Placeholder for ballots
+    needed = 296,             # Placeholder for votes needed
+    votes = parse_number(Votes), # Convert Votes to numeric
+    inducted = case_when(
+      votes >= needed ~ "Y", 
+      TRUE ~ "N"
+    ),                        # Determine inducted status
+    category = "Player",      # Assume category as 'Player'
+    needed_note = NA          # Placeholder for needed note
+  ) %>%
+  select(playerID, yearID, votedBy, ballots, needed, votes, inducted, category, needed_note) # Keep only required columns
+```
+
+```{r}
+HallOfFame <- rbind(HallOfFame, cleaned_data)
+```
+
+```{r}
+write.csv(HallOfFame, file = "updated_HallOfFame_2025.csv", row.names = FALSE)
+```
+
+```{r}
+HallOfFame %>%
+  ggplot(aes(x = yearID, fill = inducted)) +
+  geom_bar() +
+  xlim(c(1936, 2025))
+```
+
