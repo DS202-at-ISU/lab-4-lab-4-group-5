@@ -27,6 +27,12 @@ br_df <- br_df[-1, ]
 ```
 
 ```{r}
+# Ensure column names are unique
+colnames(br_df) <- make.unique(colnames(br_df))
+```
+
+
+```{r}
 cleaned_data <- br_df %>%
   mutate(
     playerID = Name,          # Map 'Name' to 'playerID'
