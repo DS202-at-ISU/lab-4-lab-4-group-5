@@ -48,6 +48,7 @@ colnames(baseballwriters)
 
 #reshape to look like hall of fame data
 newHOF <- baseballwriters %>% mutate(
+  playerID = Name,
   yearID = 2025,
   votedBy = "BBWAA",
   ballots = 394,
@@ -56,8 +57,10 @@ newHOF <- baseballwriters %>% mutate(
   category = "Player", #assuming this
   needed_note = NA
 ) %>% rename(
-  Votes = votes
+  votes = Votes
 )
+
+newHOF <- newHOF %>% select("playerID", "yearID", "votedBy", "ballots", "needed", "votes", "inducted", "category", "needed_note")
 
 newHOF
 
