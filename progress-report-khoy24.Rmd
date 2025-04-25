@@ -8,3 +8,66 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+
+```{r, message=FALSE, warning=FALSE}
+
+library(Lahman)
+head(HallOfFame, 3)
+library(rvest)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+
+# Use the rvest package to download and parse data tables for Hall of Fame voting records.
+url <- "https://www.baseball-reference.com/awards/hof_2025.shtml"
+html <- read_html(url)
+#html
+
+#extracts data tables
+tables <- html %>% html_table(fill=TRUE)
+#tables %>% str()
+
+baseballwriters <- tables[[1]]
+classicbaseballera <- tables[[2]]
+
+colnames(baseballwriters) <- as.character(baseballwriters[1, ])
+baseballwriters <- baseballwriters[-1, ]
+
+colnames(classicbaseballera) <- as.character(classicbaseballera[1, ])
+classicbaseballera <- classicbaseballera[-1, ]
+
+colnames(baseballwriters) <- make.names(colnames(baseballwriters), unique = TRUE)
+
+baseballwriters
+classicbaseballera
+
+
+colnames(baseballwriters)
+
+
+#reshape to look like hall of fame data
+newHOF <- baseballwriters %>% mutate(
+  yearID = 2025,
+  votedBy = "BBWAA",
+  ballots = 394,
+  needed = 296,
+  inducted = ifelse(Votes>=296, "Y", "N"),
+  category = "Player", #assuming this
+  needed_note = NA
+) %>% rename(
+  Votes = votes
+)
+
+newHOF
+
+
+HallOfFame %>% 
+  ggplot(aes(x = yearID, fill = inducted)) +
+  geom_bar() +
+  xlim(c(1936, 2024))
+
+
+
+
+```
