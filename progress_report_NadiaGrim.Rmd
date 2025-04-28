@@ -10,35 +10,60 @@ library(Lahman)
 library(rvest)
 
 url <- "https://www.baseball-reference.com/awards/hof_2025.shtml"
-br_hof <- read_html(url)
-br_df <- html_table(br_hof)[[1]]
+Sys.sleep(0.3)
+html <- read_html(url)
+br_df <- html_table(html)[[1]]
 
+# basic cleanup
 colnames(br_df) <- br_df[1, ]
-br_df <- br_df[-1, ]
+br_df <- br_df[-1, 2:5] %>% mutate(votes = parse_integer(Votes)) %>%
+  select(Name, votes)
 hof <- HallOfFame
 
 head(br_df)
 ```
 
 ``` {r}
-head(hof, 15)
 
-hof %>% filter(yearID == 2024)
-hof %>% filter(yearID == 2025) #no 2025 data
+#hof %>% filter(yearID == 2024)
+#hof %>% filter(yearID == 2025) #no 2025 data
 
-yes_no = factor("Y", "N")
-yes_no
-unique(hof$votedBy)
+clean <- br_df
+# changing name formats to match hof, such as by removing accents
+clean <- clean %>% mutate(Name = str_replace(Name, "á", "a"))
+clean <- clean %>% mutate(Name = str_replace(Name, "é", "e"))
+clean <- clean %>% mutate(Name = str_replace(Name, "í", "i"))
+clean$Name <- gsub("X-", "", clean$Name)
 
-br_df %>% mutate(inducted = case_when(Votes > 296 ~ TRUE, TRUE ~ FALSE))
+name_ID <- People %>% mutate(Name = paste(str_replace(nameFirst, "\\. ", "."), nameLast)) %>% 
+  select(Name, playerID)
 
-mutate(br_df, ballots = Votes + 10)
-unique(colnames(br_df))
-colnames(br_df)
+# testing if anyone was missed
+clean %>% 
+  anti_join(select(name_ID, Name, playerID), by="Name")
 
-clean <- br_df %>% mutate(yearID = 2025, ballots = 394, votes = Votes,
-                          needed = 296, ==inducted = case_when(
-                            Votes >= 296 ~ "Y", TRUE ~ "N"))
-head(clean)
-head(br_df)
+# joining
+clean <- clean %>% 
+  left_join(select(name_ID, Name, playerID), by="Name")
+
+# reordering cols and adding missing ones
+clean <- clean %>% mutate(yearID = 2025, votedBy = "BBWAA", ballots = 394,
+                          needed = 296, inducted = factor(case_when(
+                            votes >= 296 ~ "Y", TRUE ~ "N")),
+                          category = factor("Player"), needed_note = NA)
+clean <- clean %>% select(playerID, yearID, votedBy, ballots, needed, votes,
+                          inducted, category, needed_note)
+
+# combining the sets, then reordering the rows to match the HallOfFame data
+updatedHof <- rbind(hof, clean)
+updatedHof <- updatedHof %>% arrange(playerID, yearID)
+
+# the updated HallOfFame data
+head(updatedHof, 10)
+```
+
+# Comment this section out if using a different csv
+
+``` {r}
+write_csv(updatedHof, file = "HallOfFame.csv")
 ```
