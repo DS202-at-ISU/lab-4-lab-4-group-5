@@ -62,7 +62,14 @@ updatedHof <- updatedHof %>% arrange(playerID, yearID)
 head(updatedHof, 10)
 ```
 
+<<<<<<< HEAD
 
 ``` {r}
 #write_csv(updatedHof, file = "HallOfFame.csv")
+=======
+# Comment this section out if using a different csv
+
+``` {r}
+#write_csv(updatedHof, file = "HallOfFame.csv")
+>>>>>>> f722257d47973b05b0c44b515e16d261cf53e298
 ```
