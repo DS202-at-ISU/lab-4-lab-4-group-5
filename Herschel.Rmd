@@ -66,7 +66,8 @@ Step 2a: Clean the Data, removing NAs
 
 ```{r}
 
-
+br_df_clean <- br_df %>%
+  drop_na()
 
 ```
 
@@ -75,7 +76,8 @@ Step 2b: Clean the Data, removing Duplicates
 
 ```{r}
 
-
+br_df_clean <- br_df_clean %>%
+  distinct()
 
 ```
 
@@ -84,16 +86,35 @@ Step 2c: Clean the Data, shifting data into numberical labels
 
 ```{r}
 
+colnames(br_df_clean) <- make.names(colnames(br_df_clean), unique = TRUE)
 
+br_df_clean <- br_df_clean %>%
+  rename(FullName = Name)
 
 ```
 
+```{r}
+
+data("People", package = "Lahman")
+
+People <- People %>%
+  mutate(FullName = paste(nameFirst, nameLast)) %>%
+  mutate(FullName = str_trim(FullName))  
+
+```
 
 Step 3: Merge the two data frame structures
 
 ```{r}
 
+br_df_clean$FullName <- str_trim(br_df_clean$FullName)
 
+merged_df <- left_join(br_df_clean, People, by = "FullName")
+
+
+final_df <- left_join(merged_df, HallOfFame, by = "playerID")
+
+head(final_df, 10)
 
 ```
 
