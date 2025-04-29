@@ -38,6 +38,7 @@ colnames(classicbaseballera) <- as.character(classicbaseballera[1, ])
 classicbaseballera <- classicbaseballera[-1, ]
 
 colnames(baseballwriters) <- make.names(colnames(baseballwriters), unique = TRUE)
+colnames(classicbaseballera) <- make.names(colnames(classicbaseballera), unique = TRUE)
 
 baseballwriters
 classicbaseballera
@@ -60,16 +61,61 @@ newHOF <- baseballwriters %>% mutate(
   votes = Votes
 )
 
-newHOF <- newHOF %>% select("playerID", "yearID", "votedBy", "ballots", "needed", "votes", "inducted", "category", "needed_note")
+newHOF$votes <- as.numeric(newHOF$votes)
+newHOF$ballots <- as.numeric(newHOF$ballots)
+newHOF$needed <- as.numeric(newHOF$needed)
+
+#max_id <- max(HallOfFame$" ", na.rm = TRUE)
+#newHOF <- newHOF %>%
+#  mutate(id = seq(max_id + 1, max_id + n()))
+
+newHOF <- newHOF %>% select( "playerID", "yearID", "votedBy", "ballots", "needed", "votes", "inducted", "category", "needed_note")
+
+
+#reshape to look like hall of fame data
+newClassic <- classicbaseballera %>% mutate(
+  playerID = Name,
+  yearID = 2025,
+  votedBy = "Classic Baseball Era",
+  ballots = NA,
+  needed = NA,
+  inducted = "Y",
+  category = "Player", 
+  needed_note = NA,
+  votes = NA
+)
+#max_id2 <- max(newHOF$id, na.rm = TRUE)
+#newClassic <- newClassic %>%
+#  mutate(id = seq(max_id2 + 1, max_id2 + n()))
+
+newClassic <- newClassic %>% select("playerID", "yearID", "votedBy", "ballots", "needed", "votes", "inducted", "category", "needed_note")
+
+newClassic$votes <- as.numeric(newClassic$votes)
+newClassic$ballots <- as.numeric(newClassic$ballots)
+newClassic$needed <- as.numeric(newClassic$needed)
+
+#newHOF$playerID <- gsub("X-", "", newHOF$playerID)
 
 newHOF
 
+combined_data <- rbind(newClassic, newHOF)
+combined_data
+
+
+totalcombined <- rbind(HallOfFame, combined_data)
+totalcombined 
 
 HallOfFame %>% 
   ggplot(aes(x = yearID, fill = inducted)) +
   geom_bar() +
   xlim(c(1936, 2024))
 
+
+#added in 2025
+totalcombined %>% 
+  ggplot(aes(x = yearID, fill = inducted)) +
+  geom_bar() +
+  xlim(c(1936, 2025))
 
 
 
